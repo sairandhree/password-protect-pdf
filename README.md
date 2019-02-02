@@ -13,7 +13,7 @@ py get-pip.py
 ## 3. install following 2 python libraries
 
 ```bash
-pip install PyPDF2
+pip install pypdf2
 pip install xlwings
 
 ```  
