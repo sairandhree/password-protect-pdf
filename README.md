@@ -17,3 +17,9 @@ pip install pypdf2
 pip install xlwings
 
 ```  
+
+## 4. Run PasswordProtectPDFs using
+```bash
+py PasswordProtectPDFs.py
+
+```
