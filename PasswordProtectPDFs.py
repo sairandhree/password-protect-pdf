@@ -12,11 +12,11 @@ def getPassword(empName,bookName,sheetName):
         wb = xw.Book(bookName)
         sht = wb.sheets[sheetName]
         myCell = wb.sheets[sheetName].api.UsedRange.Find(empName)
-        print('---------------')
         password = sht.range('B'+str(myCell.row)).value
         print ("retriving password for ",empName)
         return password
     except Exception:   
+        print("exceptions dfsd")
         return ""
 
 
@@ -52,7 +52,7 @@ def set_password(input_file, user_pass, owner_pass):
         pass
    
 
-def exportToPdf( bookName = 'Salaries.xlsm'):
+def exportToPdf( bookName = 'Salaries.xlsx'):
         
     excel = win32com.client.Dispatch('Excel.Application')
     excel.Visible = False
@@ -69,7 +69,7 @@ def exportToPdf( bookName = 'Salaries.xlsm'):
             if sheet.name != "Master":
                 sheet.SaveAs(path+sheet.name+".pdf",  FileFormat=57)
         except:
-            break
+            pass
 
     doc.Close(SaveChanges=False)
     excel.Quit()
@@ -79,7 +79,7 @@ def exportToPdf( bookName = 'Salaries.xlsm'):
 
 
 def main():
-    bookName = 'Salaries.xlsm'
+    bookName = 'Salaries.xlsx'
     sheetName = 'Master'
     exportToPdf(bookName)
     pdfFiles = glob.glob('*.pdf')
