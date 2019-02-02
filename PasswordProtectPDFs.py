@@ -17,21 +17,24 @@ def getPassword(name):
         myCell = wb.sheets[sheetName].api.UsedRange.Find(name)
         print('---------------')
         password = sht.range('B'+str(myCell.row)).value
-        print (password)
+        print ("retriving password for ",name)
         return password
-    except Exception   
+    except Exception:   
         return ""
 
 
 
 def set_password(input_file, user_pass, owner_pass):
-    """
-    Function creates new temporary pdf file with same content,
-    assigns given password to pdf and rename it with original file.
-    """
    
+  
+    print(" protecting ", input_file)
+
     try :
         path, filename = os.path.split(input_file)
+
+        if not os.path.exists("protected"):
+            os.makedirs("protected")
+        
         output_file = os.path.join(path+"protected",   filename)
 
         output = PyPDF2.PdfFileWriter()
@@ -48,10 +51,9 @@ def set_password(input_file, user_pass, owner_pass):
         output.write(outputStream)
         outputStream.close()
     except Exception:
+        print('Exception 1')
         pass
-    # Rename temporary output file with original filename, this
-    # will automatically delete temporary file
-    #os.rename(output_file, input_file)
+   
 
 
 
