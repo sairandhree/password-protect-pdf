@@ -1,23 +1,20 @@
 # Reading an excel file using Python 
 import xlwings as xw
 import os
-import argparse  
 import PyPDF2
 import glob
+import win32com.client 
 
-def getPassword(name):
+def getPassword(empName,bookName,sheetName):
     
-    bookName = 'Salaries.xlsm'
-    sheetName = 'Master'
-    
-    
+
     try:
         wb = xw.Book(bookName)
         sht = wb.sheets[sheetName]
-        myCell = wb.sheets[sheetName].api.UsedRange.Find(name)
+        myCell = wb.sheets[sheetName].api.UsedRange.Find(empName)
         print('---------------')
         password = sht.range('B'+str(myCell.row)).value
-        print ("retriving password for ",name)
+        print ("retriving password for ",empName)
         return password
     except Exception:   
         return ""
@@ -55,16 +52,43 @@ def set_password(input_file, user_pass, owner_pass):
         pass
    
 
+def exportToPdf( bookName = 'Salaries.xlsm'):
+        
+    excel = win32com.client.Dispatch('Excel.Application')
+    excel.Visible = False
+    
+    path = os.getcwd().replace('\'', '\\') + '\\'
+    doc = excel.WorkBooks.Open(path+bookName, ReadOnly=True)
+
+    for x in range(0,len(doc.Worksheets)):
+        try:
+            sheet = doc.Worksheets[x]
+            sheet.PageSetup.PrintGridLines = 1
+            print(sheet.name)
+            # 57 is PDF format even though it isn't listed as such in Microsofts documentation.
+            if sheet.name != "Master":
+                sheet.SaveAs(path+sheet.name+".pdf",  FileFormat=57)
+        except:
+            break
+
+    doc.Close(SaveChanges=False)
+    excel.Quit()
+
+
 
 
 
 def main():
+    bookName = 'Salaries.xlsm'
+    sheetName = 'Master'
+    exportToPdf(bookName)
     pdfFiles = glob.glob('*.pdf')
+
     for file in pdfFiles :
         empName  = file[:-4]
         print(empName)
        
-        set_password(file, getPassword(empName) , "MasterPassword")
+        set_password(file, getPassword(empName,bookName,sheetName) , "MasterPassword")
 
 
 
