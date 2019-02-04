@@ -80,7 +80,7 @@ def exportToPdf( bookName = 'Salaries.xlsx'):
 
 
 def main():
-    print(len(sys.argv))
+    
     if len (sys.argv) != 4 :
         print( "Usage:  py PasswordProtectPDFs.py Salaries.xlsx Master D ")
         sys.exit (1)
