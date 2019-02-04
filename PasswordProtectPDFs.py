@@ -53,7 +53,7 @@ def set_password(input_file, user_pass, owner_pass):
         pass
    
 
-def exportToPdf( bookName = 'Salaries.xlsx'):
+def exportToPdf( bookName ,masterSheetName):
         
     excel = win32com.client.Dispatch('Excel.Application')
     excel.Visible = False
@@ -67,7 +67,7 @@ def exportToPdf( bookName = 'Salaries.xlsx'):
             #sheet.PageSetup.PrintGridLines = 1
             print(sheet.name)
             # 57 is PDF format even though it isn't listed as such in Microsofts documentation.
-            if sheet.name != "Master":
+            if sheet.name != masterSheetName:
                 sheet.SaveAs(path+sheet.name+".pdf",  FileFormat=57)
         except:
             pass
@@ -86,16 +86,16 @@ def main():
         sys.exit (1)
 
     bookName =  sys.argv[1]
-    sheetName = sys.argv[2]
+    masterSheetName = sys.argv[2]
     passwordColumn = sys.argv[3]
-    exportToPdf(bookName)
+    exportToPdf(bookName, masterSheetName)
     pdfFiles = glob.glob('*.pdf')
 
     for file in pdfFiles :
         empName  = file[:-4]
         print(empName)
        
-        set_password(file, getPassword(empName,bookName,sheetName,passwordColumn) , "MasterPassword")
+        set_password(file, getPassword(empName,bookName,masterSheetName,passwordColumn) , "MasterPassword")
 
 
 
