@@ -12,11 +12,11 @@ def getPassword(empName,bookName,sheetName):
         wb = xw.Book(bookName)
         sht = wb.sheets[sheetName]
         myCell = wb.sheets[sheetName].api.UsedRange.Find(empName)
-        password = sht.range('B'+str(myCell.row)).value
+        password = sht.range('D'+str(myCell.row)).value
         print ("retriving password for ",empName)
         return password
     except Exception:   
-        print("exceptions dfsd")
+        print("exceptions getting password for {}", empName)
         return ""
 
 
@@ -48,7 +48,7 @@ def set_password(input_file, user_pass, owner_pass):
         output.write(outputStream)
         outputStream.close()
     except Exception:
-        print('Exception 1')
+        print('Exception setting password for {}', input_file)
         pass
    
 
@@ -63,7 +63,7 @@ def exportToPdf( bookName = 'Salaries.xlsx'):
     for x in range(0,len(doc.Worksheets)):
         try:
             sheet = doc.Worksheets[x]
-            sheet.PageSetup.PrintGridLines = 1
+            #sheet.PageSetup.PrintGridLines = 1
             print(sheet.name)
             # 57 is PDF format even though it isn't listed as such in Microsofts documentation.
             if sheet.name != "Master":
