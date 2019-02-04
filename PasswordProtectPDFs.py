@@ -4,19 +4,20 @@ import os
 import PyPDF2
 import glob
 import win32com.client 
+import sys
 
-def getPassword(empName,bookName,sheetName):
+def getPassword(empName,bookName,sheetName, passwordColumn):
     
 
     try:
         wb = xw.Book(bookName)
         sht = wb.sheets[sheetName]
         myCell = wb.sheets[sheetName].api.UsedRange.Find(empName)
-        password = sht.range('D'+str(myCell.row)).value
+        password = sht.range(passwordColumn+str(myCell.row)).value
         print ("retriving password for ",empName)
         return password
     except Exception:   
-        print("exceptions getting password for {}", empName)
+        print("exceptions getting password for ", empName)
         return ""
 
 
@@ -48,7 +49,7 @@ def set_password(input_file, user_pass, owner_pass):
         output.write(outputStream)
         outputStream.close()
     except Exception:
-        print('Exception setting password for {}', input_file)
+        print('Exception setting password for ', input_file)
         pass
    
 
@@ -79,8 +80,14 @@ def exportToPdf( bookName = 'Salaries.xlsx'):
 
 
 def main():
-    bookName = 'Salaries.xlsx'
-    sheetName = 'Master'
+    print(len(sys.argv))
+    if len (sys.argv) != 4 :
+        print( "Usage:  py PasswordProtectPDFs.py Salaries.xlsx Master D ")
+        sys.exit (1)
+
+    bookName =  sys.argv[1]
+    sheetName = sys.argv[2]
+    passwordColumn = sys.argv[3]
     exportToPdf(bookName)
     pdfFiles = glob.glob('*.pdf')
 
@@ -88,7 +95,7 @@ def main():
         empName  = file[:-4]
         print(empName)
        
-        set_password(file, getPassword(empName,bookName,sheetName) , "MasterPassword")
+        set_password(file, getPassword(empName,bookName,sheetName,passwordColumn) , "MasterPassword")
 
 
 
