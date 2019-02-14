@@ -20,8 +20,7 @@ def set_password(input_file, user_pass, owner_pass):
     try:
         path, filename = os.path.split(input_file)
         path = os.getcwd().replace('\'', '\\') + '\\'
-        print("path ",path , filename)
-
+       
         if not os.path.exists("protected"):
             os.makedirs("protected")
 
@@ -48,7 +47,7 @@ def set_password(input_file, user_pass, owner_pass):
 
 def exportToPdf(doc, masterSheetName):
     path = os.getcwd().replace('\'', '\\') + '\\'
-    for x in range(0, len(doc.Worksheets)):
+    for x in range(0, len(doc.Worksheets)+1):
         try:
             sheet = doc.Worksheets[x]
             #sheet.PageSetup.PrintGridLines = 1
@@ -63,9 +62,9 @@ def exportToPdf(doc, masterSheetName):
 
     for file in pdfFiles:
         empName = file[:-4]
-        #print(empName)
+      
         password = getPassword(empName,doc)
-        print("password $$$$$$$$$$", password)
+        
         set_password(file, password, "MasterPassword")
 
 
@@ -73,17 +72,16 @@ def getPassword(empName, doc):
     global bookName, masterSheetName, passwordColumn
     try:
         sheet = doc.Worksheets(masterSheetName)
-        #print("sheet ###############", empName)
+        
         matchingCell = sheet.UsedRange.Find(empName)
         
         passwordCell = "{}{}".format(passwordColumn,matchingCell.Address[-1:])
-        #print("password cell", passwordCell)
+        
         
         password = sheet.Range(passwordCell)
-        #print("password is ",empName, password)
+       
         return str(password)
     except Exception as e:
-        print ("exception getting password",str(e))
         return ""
 
 
