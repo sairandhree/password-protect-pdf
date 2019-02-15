@@ -1,4 +1,4 @@
-import test
+import EmailSender
 import time
 import smtplib
 import os
@@ -59,7 +59,7 @@ def main():
     s.starttls() 
 
     # Authentication 
-    s.login(fromaddr, "Ananya12") 
+    s.login(fromaddr, "Temp1234") 
     
     pdfFiles = glob.glob("protected"+'\*.pdf')
 
@@ -71,7 +71,7 @@ def main():
         
         email = getEmailId(empName,doc)
         print("sending {} to {}".format(file,email))
-        test.sendEmail(email, file, s)
+        EmailSender.sendEmail(email, file, s)
 
     
     doc.Close(SaveChanges=False)
