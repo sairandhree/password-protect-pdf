@@ -1,7 +1,7 @@
 import os
 import PyPDF2
 import glob
-
+import shutil
 import sys
 import win32com.client 
 
@@ -27,8 +27,9 @@ def set_password(input_file, user_pass, owner_pass):
         output_file = os.path.join(path+"protected",   filename)
 
         output = PyPDF2.PdfFileWriter()
-        
-        input_stream = PyPDF2.PdfFileReader(open(input_file, "rb"))
+        inputFile = open(input_file,"rb")
+
+        input_stream = PyPDF2.PdfFileReader(inputFile)
         
         for i in range(0, input_stream.getNumPages()):
             output.addPage(input_stream.getPage(i))
@@ -39,10 +40,28 @@ def set_password(input_file, user_pass, owner_pass):
         output.write(outputStream)
         
         outputStream.close()
+        inputFile.close()
         
     except Exception as e:
         print('Exception setting password for ',str(e), input_file)
         pass
+
+
+def getPassword(empName, doc):
+    global bookName, masterSheetName, passwordColumn
+    try:
+        sheet = doc.Worksheets(masterSheetName)
+        
+        matchingCell = sheet.UsedRange.Find(empName)
+        
+        passwordCell = "{}{}".format(passwordColumn,matchingCell.Address[-1:])
+        
+        
+        password = sheet.Range(passwordCell)
+       
+        return str(password)
+    except Exception as e:
+        return ""
 
 
 def exportToPdf(doc, masterSheetName):
@@ -64,26 +83,21 @@ def exportToPdf(doc, masterSheetName):
         empName = file[:-4]
       
         password = getPassword(empName,doc)
-        
+
         set_password(file, password, "MasterPassword")
 
+    
+def moveUnprotectedFiles():
+    path = os.getcwd().replace('\'', '\\') + '\\'
 
-def getPassword(empName, doc):
-    global bookName, masterSheetName, passwordColumn
-    try:
-        sheet = doc.Worksheets(masterSheetName)
-        
-        matchingCell = sheet.UsedRange.Find(empName)
-        
-        passwordCell = "{}{}".format(passwordColumn,matchingCell.Address[-1:])
-        
-        
-        password = sheet.Range(passwordCell)
-       
-        return str(password)
-    except Exception as e:
-        return ""
+    destination = "unprotected"
+    if not os.path.exists(destination):
+        os.makedirs(destination)
 
+    pdfFiles = glob.glob('*.pdf')
+
+    for f in pdfFiles:
+        shutil.move(f, path+destination)
 
 def main():
     global bookName, masterSheetName, passwordColumn
@@ -102,6 +116,10 @@ def main():
     excel.Visible = False
     exportToPdf(doc,  masterSheetName)
 
+    moveUnprotectedFiles()
+
+
+    
     doc.Close(SaveChanges=False)
     excel.Quit()
 
