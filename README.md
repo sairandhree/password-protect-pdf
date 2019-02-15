@@ -14,7 +14,7 @@ py get-pip.py
 
 ```bash
 pip install pypdf2
-pip install xlwings
+pip install python-dateutil
 
 ```  
 
