@@ -12,7 +12,7 @@ s = smtplib.SMTP('smtp.gmail.com', 587)
 s.starttls() 
 
 # Authentication 
-s.login(fromaddr, "Ananya12") 
+s.login(fromaddr, "Temp1234") 
     
     
     
