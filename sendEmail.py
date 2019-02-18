@@ -7,59 +7,60 @@ import glob
 import shutil
 import sys
 import win32com.client 
+import configparser
 
 
-bookName = "Salaries.xlsx"
-masterSheetName = "Master"
-passwordColumn = "B"
-emailColumn = "C"
+bookName = ""
+masterSheetName = ""
+emailColumn = ""
+config = None
 
 
 def getEmailId(empName, doc):
-    global bookName, masterSheetName, passwordColumn
+    global bookName, masterSheetName, emailColumn
     try:
         sheet = doc.Worksheets(masterSheetName)
         
         matchingCell = sheet.UsedRange.Find(empName)
         
-        passwordCell = "{}{}".format(passwordColumn,matchingCell.Address[-1:])
+        emailCell = "{}{}".format(emailColumn,matchingCell.Address[-1:])
         
         
-        password = sheet.Range(passwordCell)
+        email = sheet.Range(emailCell)
        
-        return str(password)
+        return str(email)
     except Exception as e:
+        print(str(e))
         return ""
 
 
 
 def main():
-    global bookName, masterSheetName, passwordColumn
-    if len(sys.argv) != 4:
-        print("Usage:  py PasswordProtectPDFs.py Salaries.xlsx Master D ")
-        sys.exit(1)
+    global bookName, masterSheetName, emailColumn, config
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    defConfig = config["DEFAULT"]
 
-    bookName = sys.argv[1]
-    masterSheetName = sys.argv[2]
-    passwordColumn = sys.argv[3]
+    bookName = str(defConfig["Workbook"])
+    masterSheetName = str(defConfig["Master_Sheet"])
+    emailColumn = str(defConfig["EmailId_column"])
 
     path = os.getcwd().replace('\'', '\\') + '\\'
     excel = win32com.client.gencache.EnsureDispatch('Excel.Application')
     doc = excel.Workbooks.Open(path+bookName, ReadOnly=True)
     excel.Visible = False
     
-    
-
-
-    fromaddr = "sairandhree.sule@niyuj.com"
+    fromaddr = str(defConfig["Sender_EmailId"])
+    print(fromaddr)
     # creates SMTP session 
     s = smtplib.SMTP('smtp.gmail.com', 587) 
 
+
     # start TLS for security 
     s.starttls() 
-
+ 
     # Authentication 
-    s.login(fromaddr, "Temp1234") 
+    s.login(fromaddr, str(defConfig["Sender_Email_Password"])) 
     
     pdfFiles = glob.glob("protected"+'\*.pdf')
 
@@ -67,7 +68,6 @@ def main():
     for file in pdfFiles:
         empName = file[:-4]
         empName = empName.split("\\")[-1:][0]
-        print(empName)
         
         email = getEmailId(empName,doc)
         print("sending {} to {}".format(file,email))
