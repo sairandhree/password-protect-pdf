@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime
 
 
-def sendEmail(to, attachmentFile, s):
+def sendEmail(to, attachmentFile, s, config):
     today = datetime.now()
     one_month_ago = today - relativedelta(months = 1)
     # print "one month ago date time: %s" % one_month_ago
@@ -18,14 +18,13 @@ def sendEmail(to, attachmentFile, s):
     print("Salary SLIP for month of {} {} ".format(last_month_text,last_year_full) )
   
 
-    toaddr = "sairandhree.sule+tab1@niyuj.com"
+    toaddr = str(config["cc_emailId"])
     
     # instance of MIMEMultipart 
     msg = MIMEMultipart() 
     
     # storing the senders email address   
-    msg['From'] = "Niyuj Finance"
-    
+    msg['From'] = str(config["Email_from_Name"])
     # storing the receivers email address  
     msg['To'] = to 
     

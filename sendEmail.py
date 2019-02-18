@@ -71,7 +71,7 @@ def main():
         
         email = getEmailId(empName,doc)
         print("sending {} to {}".format(file,email))
-        EmailSender.sendEmail(email, file, s)
+        EmailSender.sendEmail(email, file, s, defConfig)
 
     
     doc.Close(SaveChanges=False)
