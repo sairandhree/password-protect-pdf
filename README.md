@@ -18,8 +18,17 @@ pip install python-dateutil
 
 ```  
 
-## 4. Run PasswordProtectPDFs using
+## 4. Configure all properties in file config.ini
+
+## 5. To generate PDFs use following command
+
 ```bash
 py PasswordProtectPDFs.py
+
+```
+## 6. Send  emails using
+
+```bash
+py SendEmail.py
 
 ```
