@@ -4,12 +4,14 @@ import glob
 import shutil
 import sys
 import win32com.client 
+import configparser
 
 
-bookName = "Salaries.xlsx"
-masterSheetName = "Master"
-passwordColumn = "B"
-emailColumn = "C"
+bookName = ""
+masterSheetName = "aster"
+passwordColumn = ""
+emailColumn = ""
+config = None
 
 
 def set_password(input_file, user_pass, owner_pass):
@@ -61,12 +63,13 @@ def getPassword(empName, doc):
        
         return str(password)
     except Exception as e:
+        print("exception", str(e))
         return ""
 
 
 def exportToPdf(doc, masterSheetName):
     path = os.getcwd().replace('\'', '\\') + '\\'
-    for x in range(0, len(doc.Worksheets)+1):
+    for x in range(1, len(doc.Worksheets)+1):
         try:
             sheet = doc.Worksheets[x]
             #sheet.PageSetup.PrintGridLines = 1
@@ -74,8 +77,9 @@ def exportToPdf(doc, masterSheetName):
             # 57 is PDF format even though it isn't listed as such in Microsofts documentation.
             if sheet.Name != masterSheetName:
                 sheet.SaveAs(path+sheet.Name+".pdf",  FileFormat=57)
-        except:
-           pass
+        except Exception as e:
+            print("exception ", str(e))
+            pass
 
     pdfFiles = glob.glob('*.pdf')
 
@@ -100,20 +104,28 @@ def moveUnprotectedFiles():
         shutil.move(f, path+destination)
 
 def main():
-    global bookName, masterSheetName, passwordColumn
-    if len(sys.argv) != 4:
-        print("Usage:  py PasswordProtectPDFs.py Salaries.xlsx Master D ")
-        sys.exit(1)
+    global bookName, masterSheetName, passwordColumn, config
 
-    bookName = sys.argv[1]
-    masterSheetName = sys.argv[2]
-    passwordColumn = sys.argv[3]
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    defConfig = config["DEFAULT"]
+
+
+    bookName = str(defConfig["Workbook"])
+    masterSheetName = str(defConfig["Master_Sheet"])
+    passwordColumn = str(defConfig["Password_Column"])
+
+    print(bookName, masterSheetName, passwordColumn)
 
     path = os.getcwd().replace('\'', '\\') + '\\'
     excel =  win32com.client.gencache.EnsureDispatch('Excel.Application')
     doc = excel.Workbooks.Open(path+bookName, ReadOnly=True)
 
     excel.Visible = False
+ 
+
+
+
     exportToPdf(doc,  masterSheetName)
 
     moveUnprotectedFiles()
