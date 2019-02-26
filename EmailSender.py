@@ -15,7 +15,7 @@ def sendEmail(to, attachmentFile, s, config):
     last_year_full = one_month_ago.strftime('%Y')
 
 
-    print("Salary SLIP for month of {} {} ".format(last_month_text,last_year_full) )
+    #print("Salary SLIP for month of {} {} ".format(last_month_text,last_year_full) )
   
 
     toaddr = str(config["cc_emailId"])

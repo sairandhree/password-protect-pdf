@@ -51,7 +51,7 @@ def main():
     excel.Visible = False
     
     fromaddr = str(defConfig["Sender_EmailId"])
-    print(fromaddr)
+    #print(fromaddr)
     # creates SMTP session 
     s = smtplib.SMTP('smtp.gmail.com', 587) 
 
@@ -64,13 +64,13 @@ def main():
     
     pdfFiles = glob.glob("protected"+'\*.pdf')
 
-    print(pdfFiles,path)
+    #print(pdfFiles,path)
     for file in pdfFiles:
         empName = file[:-4]
         empName = empName.split("\\")[-1:][0]
         
         email = getEmailId(empName,doc)
-        print("sending {} to {}".format(file,email))
+        #print("sending {} to {}".format(file,email))
         EmailSender.sendEmail(email, file, s, defConfig)
 
     
